@@ -144,46 +144,50 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      height: 24.h,
-                      width: 24.h,
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          unselectedWidgetColor: Colors.red,
-                        ),
-                        child: Checkbox(
-                          side: BorderSide(
-                            width: 1.w,
-                            color: const Color(0xff333333).withOpacity(0.4),
+                    Transform.scale(
+                      scale: 1.7,
+                      child: SizedBox(
+                        height: 24.h,
+                        width: 24.h,
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            unselectedWidgetColor: Colors.red,
                           ),
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          activeColor: const Color(0xff2196F3),
-                          checkColor: Colors.white,
-                          value: _isCheck,
-                          onChanged: (value) {
-                            setState(() {
-                              _isCheck = !_isCheck;
-                              widget.onClickCheck?.call(value);
-                
-                              // bool? checkbox = widget.onTapCheckbox?.call();
-                              // AppLoggerCS.debugLog("herecheckbox: $checkbox");
-                              // if (checkbox != null) {
-                              //   if (checkbox) {
-                              //     // _isCheck = !_isCheck;
-                              //     _isCheck = checkbox;
-                              //     widget.onClickCheck?.call(value);
-                              //     // _isCheck = widget.onClickCheck?.call(value) ?? false;
-                              //   } else {
-                              //     //
-                              //   }
-                              // } else {
-                              //   //
-                              // }
-                            });
-                          },
+                          child: Checkbox(
+                            side: BorderSide(
+                              width: 1.w,
+                              color: const Color(0xff333333).withOpacity(0.4),
+                            ),
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            activeColor: const Color(0xff2196F3),
+                            checkColor: Colors.white,
+                            value: _isCheck,
+                            onChanged: (value) {
+                              setState(() {
+                                _isCheck = !_isCheck;
+                                widget.onClickCheck?.call(value);
+                                          
+                                // bool? checkbox = widget.onTapCheckbox?.call();
+                                // AppLoggerCS.debugLog("herecheckbox: $checkbox");
+                                // if (checkbox != null) {
+                                //   if (checkbox) {
+                                //     // _isCheck = !_isCheck;
+                                //     _isCheck = checkbox;
+                                //     widget.onClickCheck?.call(value);
+                                //     // _isCheck = widget.onClickCheck?.call(value) ?? false;
+                                //   } else {
+                                //     //
+                                //   }
+                                // } else {
+                                //   //
+                                // }
+                              });
+                            },
+                          ),
                         ),
                       ),
                     ),
+                    SizedBox(height: 8.h),
                     Text(
                       "Mark As Done",
                       textAlign: TextAlign.center,

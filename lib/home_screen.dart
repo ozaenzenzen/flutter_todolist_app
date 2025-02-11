@@ -5,6 +5,7 @@ import 'package:fam_coding_supply/ui/widget/app_textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_todolist_app/presentation/widget/categories_chip_widget.dart';
 import 'package:flutter_todolist_app/presentation/widget/task_item_widget.dart';
+import 'package:flutter_todolist_app/settings_screen.dart';
 import 'package:flutter_todolist_app/support/app_color.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,7 +17,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController searchController = TextEditingController();
-  final items = List<String>.generate(20, (i) => 'Item ${i + 1}');
+  // final items = List<String>.generate(20, (i) => 'Item ${i + 1}');
+  List<int> items = List<int>.generate(20, (int index) => index);
 
   List categoriesFilter = [
     "On-Going",
@@ -70,6 +72,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     InkWell(
+                      onTap: () {
+                        //
+                      },
                       child: Icon(
                         Icons.settings,
                         size: 24.h,
@@ -221,6 +226,30 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(height: 12.h),
+              // Expanded(
+              //   child: ListView.builder(
+              //     itemCount: items.length,
+              //     padding: const EdgeInsets.symmetric(vertical: 16),
+              //     itemBuilder: (BuildContext context, int index) {
+              //       return Dismissible(
+              //         background: Container(
+              //           color: Colors.green,
+              //         ),
+              //         key: ValueKey<int>(items[index]),
+              //         onDismissed: (DismissDirection direction) {
+              //           setState(() {
+              //             items.removeAt(index);
+              //           });
+              //         },
+              //         child: ListTile(
+              //           title: Text(
+              //             'Item ${items[index]}',
+              //           ),
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
               Expanded(
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(
@@ -230,10 +259,8 @@ class _HomePageState extends State<HomePage> {
                   shrinkWrap: true,
                   physics: const ClampingScrollPhysics(),
                   itemBuilder: (context, index) {
-                    final item = items[index];
                     return Dismissible(
-                      // key: UniqueKey(),
-                      key: Key(item),
+                      key: ValueKey<int>(items[index]),
                       onDismissed: (direction) {
                         // Remove the item from the data source.
                         setState(() {
@@ -241,7 +268,11 @@ class _HomePageState extends State<HomePage> {
                         });
 
                         // Then show a snackbar.
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$item dismissed')));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${items[index]} dismissed'),
+                          ),
+                        );
                       },
                       background: Container(
                         color: Colors.red,
@@ -255,7 +286,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: TaskItemWidget(
                         id: "$index",
-                        title: "title $index",
+                        // title: "title $index",
+                        title: "title ${items[index]}",
                         created: DateTime.now(),
                         deadline: DateTime.now(),
                         onTapCheckbox: () {
@@ -422,13 +454,14 @@ class _HomePageState extends State<HomePage> {
                                   Icon(
                                     Icons.date_range,
                                     size: 24.h,
+                                    color: Colors.amber.shade400,
                                   ),
                                   SizedBox(width: 8.w),
                                   Text(
                                     chosenDate != null ? DateFormat("EE, dd MMMM yyyy").format(chosenDate!) : "Set Due Date",
                                     style: GoogleFonts.inter(
                                       fontSize: 16.sp,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w400,
                                     ),
                                   )
                                 ],
@@ -449,7 +482,7 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: 12.h),
                       InkWell(
                         onTap: () async {
                           chosenTime = await showTimePicker(
@@ -467,13 +500,14 @@ class _HomePageState extends State<HomePage> {
                                   Icon(
                                     Icons.lock_clock_outlined,
                                     size: 24.h,
+                                    color: Colors.red.shade300,
                                   ),
                                   SizedBox(width: 8.w),
                                   Text(
                                     chosenTime != null ? "${chosenTime?.format(context)}" : "Set Time",
                                     style: GoogleFonts.inter(
                                       fontSize: 16.sp,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w400,
                                     ),
                                   ),
                                 ],
