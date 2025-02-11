@@ -1,6 +1,9 @@
 import 'package:fam_coding_supply/fam_coding_supply.dart';
+import 'package:fam_coding_supply/ui/widget/app_mainbutton_widget.dart';
+import 'package:fam_coding_supply/ui/widget/app_secondarybutton_widget.dart';
 import 'package:fam_coding_supply/ui/widget/app_textfield_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_todolist_app/presentation/widget/categories_chip_widget.dart';
 import 'package:flutter_todolist_app/presentation/widget/task_item_widget.dart';
 import 'package:flutter_todolist_app/support/app_color.dart';
 
@@ -14,6 +17,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController searchController = TextEditingController();
   final items = List<String>.generate(20, (i) => 'Item ${i + 1}');
+
+  List categoriesFilter = [
+    "Completed",
+    "1 Day To Go",
+    "1 Week To Go",
+  ];
+
+  String? currentFilter;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +44,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            onPressed: () {},
+            onPressed: () async {
+              await bottomSheetAction();
+            },
           ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,12 +120,34 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.symmetric(
                   horizontal: 16.w,
                 ),
-                child: Text(
-                  "Categories",
-                  style: GoogleFonts.inter(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Categories",
+                      style: GoogleFonts.inter(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (currentFilter != null)
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            currentFilter = null;
+                          });
+                        },
+                        child: Text(
+                          "Clear Filter",
+                          style: GoogleFonts.inter(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
               SizedBox(height: 12.h),
@@ -121,20 +156,38 @@ class _HomePageState extends State<HomePage> {
                 child: ListView.separated(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  itemCount: 23,
+                  itemCount: categoriesFilter.length,
                   itemBuilder: (context, index) {
-                    Widget chip = Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                      ),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: const Color(0xff2196F3).withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(
-                          20.h,
-                        ),
-                      ),
-                      child: Text("TEsting $index"),
+                    // Widget chip = Container(
+                    //   padding: EdgeInsets.symmetric(
+                    //     horizontal: 12.w,
+                    //   ),
+                    //   alignment: Alignment.center,
+                    //   decoration: BoxDecoration(
+                    //     color: const Color(0xff2196F3).withOpacity(0.2),
+                    //     borderRadius: BorderRadius.circular(
+                    //       20.h,
+                    //     ),
+                    //   ),
+                    //   child: Text("${categoriesFilter[index]}"),
+                    // );
+                    Widget chip = CategoriesChipWidget(
+                      value: categoriesFilter[index],
+                      groupValue: currentFilter,
+                      onChanged: (value) {
+                        setState(() {
+                          if (value == currentFilter) {
+                            currentFilter = null;
+                          } else {
+                            currentFilter = value;
+                          }
+                          // if (currentFilter == value){
+                          //   currentFilter = null;
+                          // }
+                          AppLoggerCS.debugLog("$currentFilter");
+                        });
+                      },
+                      label: categoriesFilter[index],
                     );
                     if (index == 0) {
                       return Row(
@@ -202,115 +255,14 @@ class _HomePageState extends State<HomePage> {
                         title: "title $index",
                         created: DateTime.now(),
                         deadline: DateTime.now(),
+                        onTap: () async {
+                          await bottomSheetAction();
+                        },
+                        onClickCheck: (bool? isCheck) {
+                          AppLoggerCS.debugLog("debug: $isCheck");
+                        },
                       ),
                     );
-                    // return InkWell(
-                    //   onTap: () {
-                    //     //
-                    //   },
-                    //   child: Container(
-                    //     padding: EdgeInsets.symmetric(
-                    //       vertical: 12.h,
-                    //       horizontal: 16.w,
-                    //     ),
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.white,
-                    //       borderRadius: BorderRadius.circular(
-                    //         4.h,
-                    //       ),
-                    //       boxShadow: [
-                    //         BoxShadow(
-                    //           color: Colors.blueGrey.shade900.withOpacity(0.1),
-                    //           offset: const Offset(1, 1),
-                    //           blurRadius: 4,
-                    //           spreadRadius: 0.1,
-                    //         )
-                    //       ],
-                    //     ),
-                    //     child: Row(
-                    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //       children: [
-                    //         Column(
-                    //           crossAxisAlignment: CrossAxisAlignment.start,
-                    //           children: [
-                    //             Text(
-                    //               "Title $index",
-                    //               style: GoogleFonts.inter(
-                    //                 fontSize: 18.sp,
-                    //                 fontWeight: FontWeight.w600,
-                    //               ),
-                    //             ),
-                    //             // SizedBox(height: 4.h),
-                    //             // Text(
-                    //             //   "'The quick brown fox jumps over the lazy dog' is an English-language pangram – a sentence that contains all the letters of the alphabet. $index",
-                    //             //   maxLines: 2,
-                    //             //   overflow: TextOverflow.ellipsis,
-                    //             //   style: GoogleFonts.inter(
-                    //             //     fontSize: 14.sp,
-                    //             //     fontWeight: FontWeight.w400,
-                    //             //   ),
-                    //             // ),
-                    //             // Text(
-                    //             //   "Status $index",
-                    //             //   style: GoogleFonts.inter(
-                    //             //     fontSize: 14.sp,
-                    //             //     fontWeight: FontWeight.w400,
-                    //             //   ),
-                    //             // ),
-                    //             SizedBox(height: 12.h),
-                    //             Text(
-                    //               "Created ${DateFormat().format(DateTime.now())}",
-                    //               style: GoogleFonts.inter(
-                    //                 color: Colors.grey.shade700,
-                    //                 fontSize: 12.sp,
-                    //                 fontWeight: FontWeight.w400,
-                    //               ),
-                    //             ),
-                    //             SizedBox(height: 4.w),
-                    //             Text(
-                    //               "Deadline ${DateFormat().format(DateTime.now())}",
-                    //               style: GoogleFonts.inter(
-                    //                 color: Colors.grey.shade700,
-                    //                 fontSize: 12.sp,
-                    //                 fontWeight: FontWeight.w400,
-                    //               ),
-                    //             ),
-                    //             // Row(
-                    //             //   children: [
-                    //             //     Text(
-                    //             //       "Created ${DateFormat().format(DateTime.now())}",
-                    //             //       style: GoogleFonts.inter(
-                    //             //         fontSize: 14.sp,
-                    //             //         fontWeight: FontWeight.w400,
-                    //             //       ),
-                    //             //     ),
-                    //             //     SizedBox(width: 4.w),
-                    //             //     Text(
-                    //             //       "Deadline ${DateFormat().format(DateTime.now())}",
-                    //             //       style: GoogleFonts.inter(
-                    //             //         fontSize: 14.sp,
-                    //             //         fontWeight: FontWeight.w400,
-                    //             //       ),
-                    //             //     ),
-                    //             //   ],
-                    //             // ),
-                    //           ],
-                    //         ),
-                    //         SizedBox(
-                    //           height: 24.h,
-                    //           width: 24.h,
-                    //           child: Checkbox(
-                    //             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    //             value: true,
-                    //             onChanged: (value) {
-                    //               //
-                    //             },
-                    //           ),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // );
                   },
                   separatorBuilder: (context, index) {
                     return SizedBox(height: 8.h);
@@ -320,6 +272,110 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> bottomSheetAction() async {
+    await AppBottomSheetAction().showBottomSheet(
+      padding: EdgeInsets.symmetric(
+        vertical: 12.h,
+        horizontal: 12.w,
+      ),
+      context: context,
+      radius: 8.h,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              InkWell(
+                onTap: () {
+                  // Navigator.pop(context);
+                },
+                child: Text(
+                  "Save",
+                  style: GoogleFonts.inter(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16.sp,
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Close",
+                  style: GoogleFonts.inter(
+                    color: Colors.red,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16.sp,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          Container(
+            height: 1.h,
+            color: const Color(0xffE2E2E2),
+          ),
+          SizedBox(height: 16.h),
+          // content ?? const SizedBox(),
+          TextField(
+            style: GoogleFonts.inter(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w600,
+            ),
+            decoration: InputDecoration(
+              filled: false,
+              contentPadding: EdgeInsets.all(10.h),
+              hintText: "Type Title Here...",
+              hintStyle: GoogleFonts.inter(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w400,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.h),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.h),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          SizedBox(height: 8.h),
+          TextField(
+            style: GoogleFonts.inter(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
+            ),
+            maxLines: 14,
+            decoration: InputDecoration(
+              filled: false,
+              contentPadding: EdgeInsets.all(10.h),
+              hintText: "Type Body Here...",
+              hintStyle: GoogleFonts.inter(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w400,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.h),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.h),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

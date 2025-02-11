@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:flutter/material.dart';
 
@@ -8,6 +10,7 @@ class TaskItemWidget extends StatefulWidget {
   final String? description;
   final DateTime created;
   final DateTime deadline;
+  final void Function(bool?)? onClickCheck;
   // final bool? isCheck;
 
   const TaskItemWidget({
@@ -18,6 +21,7 @@ class TaskItemWidget extends StatefulWidget {
     this.description,
     required this.created,
     required this.deadline,
+    this.onClickCheck,
     // this.isCheck,
   });
 
@@ -26,13 +30,13 @@ class TaskItemWidget extends StatefulWidget {
 }
 
 class _TaskItemWidgetState extends State<TaskItemWidget> {
-  bool isCheck = false;
+  bool _isCheck = false;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        //
+        widget.onTap?.call();
       },
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -139,11 +143,12 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   activeColor: const Color(0xff2196F3),
                   checkColor: Colors.white,
-                  value: isCheck,
+                  value: _isCheck,
                   onChanged: (value) {
                     setState(() {
-                      isCheck = !isCheck;
+                      _isCheck = !_isCheck;
                     });
+                    widget.onClickCheck?.call(value);
                   },
                 ),
               ),
