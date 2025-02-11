@@ -256,6 +256,13 @@ class _HomePageState extends State<HomePage> {
                         title: "title $index",
                         created: DateTime.now(),
                         deadline: DateTime.now(),
+                        onTapCheckbox: () {
+                          AppDialogActionCS.showWarningPopup(
+                            context: context,
+                            title: "Warning",
+                            description: "Are you sure want to finish this task?",
+                          );
+                        },
                         onTap: () async {
                           await bottomSheetAction();
                         },

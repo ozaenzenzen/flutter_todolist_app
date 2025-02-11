@@ -11,6 +11,7 @@ class TaskItemWidget extends StatefulWidget {
   final DateTime created;
   final DateTime deadline;
   final void Function(bool?)? onClickCheck;
+  final void Function()? onTapCheckbox;
   // final bool? isCheck;
 
   const TaskItemWidget({
@@ -22,6 +23,7 @@ class TaskItemWidget extends StatefulWidget {
     required this.created,
     required this.deadline,
     this.onClickCheck,
+    this.onTapCheckbox,
     // this.isCheck,
   });
 
@@ -128,28 +130,37 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                 // ),
               ],
             ),
-            SizedBox(
-              height: 24.h,
-              width: 24.h,
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  unselectedWidgetColor: Colors.red,
-                ),
-                child: Checkbox(
-                  side: BorderSide(
-                    width: 1.w,
-                    color: const Color(0xff333333).withOpacity(0.4),
+            InkWell(
+              onTap: () {
+                // widget.onTapCheckbox?.call();
+              },
+              child: SizedBox(
+                height: 24.h,
+                width: 24.h,
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    unselectedWidgetColor: Colors.red,
                   ),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  activeColor: const Color(0xff2196F3),
-                  checkColor: Colors.white,
-                  value: _isCheck,
-                  onChanged: (value) {
-                    setState(() {
-                      _isCheck = !_isCheck;
-                    });
-                    widget.onClickCheck?.call(value);
-                  },
+                  child: Checkbox(
+                    side: BorderSide(
+                      width: 1.w,
+                      color: const Color(0xff333333).withOpacity(0.4),
+                    ),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    activeColor: const Color(0xff2196F3),
+                    checkColor: Colors.white,
+                    value: _isCheck,
+                    onChanged: (value) {
+                      if (!_isCheck) {
+                        widget.onTapCheckbox?.call();
+                      } else {
+                        setState(() {
+                          _isCheck = !_isCheck;
+                        });
+                        widget.onClickCheck?.call(value);
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
