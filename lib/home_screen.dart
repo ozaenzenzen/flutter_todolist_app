@@ -27,6 +27,8 @@ class _HomePageState extends State<HomePage> {
 
   String? currentFilter;
 
+  bool confirmDelete = false;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -257,11 +259,30 @@ class _HomePageState extends State<HomePage> {
                         created: DateTime.now(),
                         deadline: DateTime.now(),
                         onTapCheckbox: () {
+                          confirmDelete = false;
                           AppDialogActionCS.showWarningPopup(
                             context: context,
                             title: "Warning",
                             description: "Are you sure want to finish this task?",
-                          );
+                            isHorizontal: false,
+                            mainButtonAction: () {
+                              setState(() {
+                                confirmDelete = false;
+                                Navigator.pop(context);
+                              });
+                            },
+                            mainButtonTitle: "Back",
+                            secondaryButtonAction: () {
+                              setState(() {
+                                confirmDelete = true;
+                                Navigator.pop(context);
+                              });
+                            },
+                            secondaryButtonTitle: "Yes",
+                          ).then((value) {
+                            setState(() {});
+                          });
+                          return confirmDelete;
                         },
                         onTap: () async {
                           await bottomSheetAction();

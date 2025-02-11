@@ -11,7 +11,9 @@ class TaskItemWidget extends StatefulWidget {
   final DateTime created;
   final DateTime deadline;
   final void Function(bool?)? onClickCheck;
-  final void Function()? onTapCheckbox;
+  // final bool Function(bool?)? onClickCheck;
+  final bool Function()? onTapCheckbox;
+  // final void Function()? onTapCheckbox;
   // final bool? isCheck;
 
   const TaskItemWidget({
@@ -62,105 +64,135 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.title,
-                  style: GoogleFonts.inter(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    style: GoogleFonts.inter(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                // SizedBox(height: 4.h),
-                // Text(
-                //   "'The quick brown fox jumps over the lazy dog' is an English-language pangram – a sentence that contains all the letters of the alphabet. $index",
-                //   maxLines: 2,
-                //   overflow: TextOverflow.ellipsis,
-                //   style: GoogleFonts.inter(
-                //     fontSize: 14.sp,
-                //     fontWeight: FontWeight.w400,
-                //   ),
-                // ),
-                // Text(
-                //   "Status $index",
-                //   style: GoogleFonts.inter(
-                //     fontSize: 14.sp,
-                //     fontWeight: FontWeight.w400,
-                //   ),
-                // ),
-                SizedBox(height: 12.h),
-                Text(
-                  "Created ${DateFormat().format(widget.created)}",
-                  // "Created ${DateFormat().format(DateTime.now())}",
-                  style: GoogleFonts.inter(
-                    color: Colors.grey.shade700,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
+                  // SizedBox(height: 4.h),
+                  // Text(
+                  //   "'The quick brown fox jumps over the lazy dog' is an English-language pangram – a sentence that contains all the letters of the alphabet. $index",
+                  //   maxLines: 2,
+                  //   overflow: TextOverflow.ellipsis,
+                  //   style: GoogleFonts.inter(
+                  //     fontSize: 14.sp,
+                  //     fontWeight: FontWeight.w400,
+                  //   ),
+                  // ),
+                  // Text(
+                  //   "Status $index",
+                  //   style: GoogleFonts.inter(
+                  //     fontSize: 14.sp,
+                  //     fontWeight: FontWeight.w400,
+                  //   ),
+                  // ),
+                  SizedBox(height: 12.h),
+                  Text(
+                    "Created ${DateFormat().format(widget.created)}",
+                    // "Created ${DateFormat().format(DateTime.now())}",
+                    style: GoogleFonts.inter(
+                      color: Colors.grey.shade700,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                ),
-                SizedBox(height: 4.w),
-                Text(
-                  "Deadline ${DateFormat().format(widget.deadline)}",
-                  // "Deadline ${DateFormat().format(DateTime.now())}",
-                  style: GoogleFonts.inter(
-                    color: Colors.grey.shade700,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
+                  SizedBox(height: 4.w),
+                  Text(
+                    "Deadline ${DateFormat().format(widget.deadline)}",
+                    // "Deadline ${DateFormat().format(DateTime.now())}",
+                    style: GoogleFonts.inter(
+                      color: Colors.grey.shade700,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                ),
-                // Row(
-                //   children: [
-                //     Text(
-                //       "Created ${DateFormat().format(DateTime.now())}",
-                //       style: GoogleFonts.inter(
-                //         fontSize: 14.sp,
-                //         fontWeight: FontWeight.w400,
-                //       ),
-                //     ),
-                //     SizedBox(width: 4.w),
-                //     Text(
-                //       "Deadline ${DateFormat().format(DateTime.now())}",
-                //       style: GoogleFonts.inter(
-                //         fontSize: 14.sp,
-                //         fontWeight: FontWeight.w400,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-              ],
+                  // Row(
+                  //   children: [
+                  //     Text(
+                  //       "Created ${DateFormat().format(DateTime.now())}",
+                  //       style: GoogleFonts.inter(
+                  //         fontSize: 14.sp,
+                  //         fontWeight: FontWeight.w400,
+                  //       ),
+                  //     ),
+                  //     SizedBox(width: 4.w),
+                  //     Text(
+                  //       "Deadline ${DateFormat().format(DateTime.now())}",
+                  //       style: GoogleFonts.inter(
+                  //         fontSize: 14.sp,
+                  //         fontWeight: FontWeight.w400,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                ],
+              ),
             ),
             InkWell(
               onTap: () {
                 // widget.onTapCheckbox?.call();
               },
               child: SizedBox(
-                height: 24.h,
-                width: 24.h,
-                child: Theme(
-                  data: Theme.of(context).copyWith(
-                    unselectedWidgetColor: Colors.red,
-                  ),
-                  child: Checkbox(
-                    side: BorderSide(
-                      width: 1.w,
-                      color: const Color(0xff333333).withOpacity(0.4),
+                width: 50.w,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 24.h,
+                      width: 24.h,
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          unselectedWidgetColor: Colors.red,
+                        ),
+                        child: Checkbox(
+                          side: BorderSide(
+                            width: 1.w,
+                            color: const Color(0xff333333).withOpacity(0.4),
+                          ),
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          activeColor: const Color(0xff2196F3),
+                          checkColor: Colors.white,
+                          value: _isCheck,
+                          onChanged: (value) {
+                            setState(() {
+                              _isCheck = !_isCheck;
+                              widget.onClickCheck?.call(value);
+                
+                              // bool? checkbox = widget.onTapCheckbox?.call();
+                              // AppLoggerCS.debugLog("herecheckbox: $checkbox");
+                              // if (checkbox != null) {
+                              //   if (checkbox) {
+                              //     // _isCheck = !_isCheck;
+                              //     _isCheck = checkbox;
+                              //     widget.onClickCheck?.call(value);
+                              //     // _isCheck = widget.onClickCheck?.call(value) ?? false;
+                              //   } else {
+                              //     //
+                              //   }
+                              // } else {
+                              //   //
+                              // }
+                            });
+                          },
+                        ),
+                      ),
                     ),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    activeColor: const Color(0xff2196F3),
-                    checkColor: Colors.white,
-                    value: _isCheck,
-                    onChanged: (value) {
-                      if (!_isCheck) {
-                        widget.onTapCheckbox?.call();
-                      } else {
-                        setState(() {
-                          _isCheck = !_isCheck;
-                        });
-                        widget.onClickCheck?.call(value);
-                      }
-                    },
-                  ),
+                    Text(
+                      "Mark As Done",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
