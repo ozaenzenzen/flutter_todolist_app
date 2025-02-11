@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   final items = List<String>.generate(20, (i) => 'Item ${i + 1}');
 
   List categoriesFilter = [
+    "On-Going",
     "Completed",
     "1 Day To Go",
     "1 Week To Go",
@@ -277,6 +278,35 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> bottomSheetAction() async {
+    DateTime? chosenDate;
+    TimeOfDay? chosenTime;
+    TextEditingController notesController = TextEditingController();
+    List<Map<String, dynamic>> _tasks = [];
+
+    void _addTask() {
+      setState(() {
+        _tasks.add({"text": "", "done": false});
+      });
+    }
+
+    void _removeTask(int index) {
+      setState(() {
+        _tasks.removeAt(index);
+      });
+    }
+
+    void _toggleTask(int index) {
+      setState(() {
+        _tasks[index]["done"] = !_tasks[index]["done"];
+      });
+    }
+
+    void _updateTaskText(int index, String text) {
+      // setState(() {
+      _tasks[index]["text"] = text;
+      // });
+    }
+
     await AppBottomSheetAction().showBottomSheet(
       padding: EdgeInsets.symmetric(
         vertical: 12.h,
@@ -286,97 +316,301 @@ class _HomePageState extends State<HomePage> {
       radius: 8.h,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              InkWell(
-                onTap: () {
-                  // Navigator.pop(context);
-                },
-                child: Text(
-                  "Save",
-                  style: GoogleFonts.inter(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
+      content: StatefulBuilder(builder: (context, setState) {
+        AppLoggerCS.debugLog("_tasks: ${_tasks}");
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                InkWell(
+                  onTap: () {
+                    // Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Save",
+                    style: GoogleFonts.inter(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16.sp,
+                    ),
                   ),
                 ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "Close",
-                  style: GoogleFonts.inter(
-                    color: Colors.red,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Close",
+                    style: GoogleFonts.inter(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16.sp,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12.h),
-          Container(
-            height: 1.h,
-            color: const Color(0xffE2E2E2),
-          ),
-          SizedBox(height: 16.h),
-          // content ?? const SizedBox(),
-          TextField(
-            style: GoogleFonts.inter(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w600,
+              ],
             ),
-            decoration: InputDecoration(
-              filled: false,
-              contentPadding: EdgeInsets.all(10.h),
-              hintText: "Type Title Here...",
-              hintStyle: GoogleFonts.inter(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.h),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.h),
-                borderSide: BorderSide.none,
-              ),
+            SizedBox(height: 12.h),
+            Container(
+              height: 1.h,
+              color: const Color(0xffE2E2E2),
             ),
-          ),
-          SizedBox(height: 8.h),
-          TextField(
-            style: GoogleFonts.inter(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w400,
+            SizedBox(height: 16.h),
+            // content ?? const SizedBox(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Date",
+                  style: GoogleFonts.inter(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        onTap: () async {
+                          chosenDate = await showDatePicker(
+                            context: context,
+                            initialEntryMode: DatePickerEntryMode.calendar,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
+                          );
+                          setState(() {});
+                        },
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.date_range,
+                                    size: 24.h,
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Text(
+                                    chosenDate != null ? DateFormat("EE, dd MMMM yyyy").format(chosenDate!) : "Set Due Date",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            if (chosenDate != null)
+                              InkWell(
+                                onTap: () {
+                                  chosenDate = null;
+                                  setState(() {});
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: Colors.red,
+                                  size: 24.h,
+                                ),
+                              )
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      InkWell(
+                        onTap: () async {
+                          chosenTime = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+                          setState(() {});
+                          // AppLoggerCS.debugLog("chosenTime ${chosenTime?.format(context)}");
+                        },
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.lock_clock_outlined,
+                                    size: 24.h,
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Text(
+                                    chosenTime != null ? "${chosenTime?.format(context)}" : "Set Time",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (chosenTime != null)
+                              InkWell(
+                                onTap: () {
+                                  chosenTime = null;
+                                  setState(() {});
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: Colors.red,
+                                  size: 24.h,
+                                ),
+                              )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            maxLines: 14,
-            decoration: InputDecoration(
-              filled: false,
-              contentPadding: EdgeInsets.all(10.h),
-              hintText: "Type Body Here...",
-              hintStyle: GoogleFonts.inter(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.h),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.h),
-                borderSide: BorderSide.none,
-              ),
+            SizedBox(height: 16.h),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Tasks",
+                  style: GoogleFonts.inter(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                Column(
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _tasks.length,
+                      itemBuilder: (context, index) {
+                        return Row(
+                          children: [
+                            SizedBox(
+                              height: 20.h,
+                              width: 20.h,
+                              child: Checkbox(
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                value: _tasks[index]["done"],
+                                onChanged: (val) {
+                                  setState(() {
+                                    _toggleTask(index);
+                                  });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: SizedBox(
+                                height: 45.h,
+                                child: TextField(
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(10),
+                                    hintText: "Enter task...",
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                  onChanged: (text) {
+                                    setState(() {
+                                      _updateTaskText(index, text);
+                                    });
+                                  },
+                                  // controller: TextEditingController(text: _tasks[index]["text"]),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () {
+                                setState(() {
+                                  _removeTask(index);
+                                });
+                              },
+                              // onPressed: () => _removeTask(index),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _addTask();
+                        });
+                      },
+                      child: Text(
+                        "Add task..",
+                        style: GoogleFonts.inter(
+                          color: Colors.blue,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     setState(() {
+                    //       _addTask();
+                    //     });
+                    //   },
+                    //   // onPressed: _addTask,
+                    //   child: const Text("Add Task"),
+                    // ),
+                  ],
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
+            SizedBox(height: 16.h),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Notes",
+                  style: GoogleFonts.inter(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                TextField(
+                  controller: notesController,
+                  style: GoogleFonts.inter(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  maxLines: 14,
+                  decoration: InputDecoration(
+                    filled: false,
+                    contentPadding: EdgeInsets.all(10.h),
+                    hintText: "Type Body Here...",
+                    hintStyle: GoogleFonts.inter(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.h),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.h),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.h),
+          ],
+        );
+      }),
     );
   }
 }
