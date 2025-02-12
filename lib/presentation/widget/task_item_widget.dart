@@ -84,19 +84,19 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                   //     fontWeight: FontWeight.w400,
                   //   ),
                   // ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    "Created ${DateFormat().format(widget.created)}",
-                    // "Created ${DateFormat().format(DateTime.now())}",
-                    style: GoogleFonts.inter(
-                      color: Colors.grey.shade700,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+                  // SizedBox(height: 12.h),
+                  // Text(
+                  //   "Created ${DateFormat().format(widget.created)}",
+                  //   // "Created ${DateFormat().format(DateTime.now())}",
+                  //   style: GoogleFonts.inter(
+                  //     color: Colors.grey.shade700,
+                  //     fontSize: 12.sp,
+                  //     fontWeight: FontWeight.w400,
+                  //   ),
+                  // ),
                   SizedBox(height: 4.w),
                   Text(
-                    "Deadline ${DateFormat().format(widget.deadline)}",
+                    "Due: ${DateFormat().format(widget.deadline)}",
                     // "Deadline ${DateFormat().format(DateTime.now())}",
                     style: GoogleFonts.inter(
                       color: Colors.grey.shade700,

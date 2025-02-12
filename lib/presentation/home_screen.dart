@@ -257,7 +257,7 @@ class _HomePageState extends State<HomePage> {
                           await bottomSheetAction(
                             taskActionEnum: TaskActionEnum.update,
                             callbackAction: (data) {
-                              AppLoggerCS.debugLog("value here 2: ${data?.toJson()}");
+                              AppLoggerCS.debugLog("value here 2: ${jsonEncode(data?.toJson())}");
                             },
                           );
                         },
@@ -356,402 +356,420 @@ class _HomePageState extends State<HomePage> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            dataHolderHandling();
+                            // dataHolder.status = 1;
+                            Navigator.pop(context);
+                            callbackAction?.call(dataHolder);
+                          },
+                          child: Text(
+                            "Save",
+                            style: GoogleFonts.inter(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.sp,
+                            ),
+                          ),
+                        ),
+                        if (taskActionEnum == TaskActionEnum.update)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(width: 16.w),
+                              InkWell(
+                                onTap: () {
+                                  AppDialogActionCS.showWarningPopup(
+                                    context: context,
+                                    title: "Warning",
+                                    description: "Are you sure want to delete this task include all its details?",
+                                    isHorizontal: false,
+                                    mainButtonAction: () {
+                                      // setState(() {
+                                      //   confirmDelete = false;
+                                      Navigator.pop(context);
+                                      // });
+                                    },
+                                    mainButtonTitle: "Back",
+                                    secondaryButtonAction: () {
+                                      // setState(() {
+                                      //   confirmDelete = true;
+                                      Navigator.pop(context);
+                                      // dataHolder.status = 2;
+                                      // });
+                                    },
+                                    secondaryButtonTitle: "Yes",
+                                  );
+                                },
+                                child: Text(
+                                  "Delete",
+                                  style: GoogleFonts.inter(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16.sp,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
                     InkWell(
                       onTap: () {
-                        dataHolderHandling();
                         Navigator.pop(context);
-                        callbackAction?.call(dataHolder);
                       },
                       child: Text(
-                        "Save",
+                        "Back",
                         style: GoogleFonts.inter(
-                          color: Colors.blue,
+                          color: Colors.black54,
                           fontWeight: FontWeight.w600,
                           fontSize: 16.sp,
                         ),
                       ),
                     ),
-                    if (taskActionEnum == TaskActionEnum.update)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(width: 16.w),
-                          InkWell(
-                            onTap: () {
-                              AppDialogActionCS.showWarningPopup(
-                                context: context,
-                                title: "Warning",
-                                description: "Are you sure want to delete this task include all its details?",
-                                isHorizontal: false,
-                                mainButtonAction: () {
-                                  // setState(() {
-                                  //   confirmDelete = false;
-                                  Navigator.pop(context);
-                                  // });
-                                },
-                                mainButtonTitle: "Back",
-                                secondaryButtonAction: () {
-                                  // setState(() {
-                                  //   confirmDelete = true;
-                                  Navigator.pop(context);
-                                  // });
-                                },
-                                secondaryButtonTitle: "Yes",
-                              );
-                            },
-                            child: Text(
-                              "Delete",
-                              style: GoogleFonts.inter(
-                                color: Colors.red,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16.sp,
-                              ),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                Container(
+                  height: 1.h,
+                  color: const Color(0xffE2E2E2),
+                ),
+                SizedBox(height: 16.h),
+              ],
+            ),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.8,
+              ),
+              // child: content ?? Container(),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Task Title",
+                          style: GoogleFonts.inter(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
+                        TextField(
+                          controller: taskTitleController,
+                          style: GoogleFonts.inter(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          maxLines: 1,
+                          decoration: InputDecoration(
+                            filled: false,
+                            contentPadding: EdgeInsets.all(10.h),
+                            hintText: "Type Body Here...",
+                            hintStyle: GoogleFonts.inter(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.h),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.h),
+                              borderSide: BorderSide.none,
                             ),
                           ),
-                        ],
-                      ),
-                  ],
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    "Back",
-                    style: GoogleFonts.inter(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16.sp,
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12.h),
-            Container(
-              height: 1.h,
-              color: const Color(0xffE2E2E2),
-            ),
-            SizedBox(height: 16.h),
-            // content ?? const SizedBox(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Task Title",
-                  style: GoogleFonts.inter(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                TextField(
-                  controller: taskTitleController,
-                  style: GoogleFonts.inter(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    filled: false,
-                    contentPadding: EdgeInsets.all(10.h),
-                    hintText: "Type Body Here...",
-                    hintStyle: GoogleFonts.inter(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.h),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.h),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16.h),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Date",
-                  style: GoogleFonts.inter(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InkWell(
-                        onTap: () async {
-                          chosenDate = await showDatePicker(
-                            context: context,
-                            initialEntryMode: DatePickerEntryMode.calendar,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
-                          );
-                          AppLoggerCS.debugLog('chosenDate: $chosenDate');
+                    SizedBox(height: 16.h),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Date",
+                          style: GoogleFonts.inter(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.w),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              InkWell(
+                                onTap: () async {
+                                  chosenDate = await showDatePicker(
+                                    context: context,
+                                    initialEntryMode: DatePickerEntryMode.calendar,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
+                                  );
+                                  AppLoggerCS.debugLog('chosenDate: $chosenDate');
 
-                          if (chosenDate != null) {
-                            concatDateAndTime = chosenDate;
-                            chosenTime = null;
-                            AppLoggerCS.debugLog('concatDateAndTime1: $concatDateAndTime');
-                          }
-                          setState(() {});
-                        },
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.date_range,
-                                    size: 24.h,
-                                    color: Colors.amber.shade400,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Text(
-                                    chosenDate != null ? DateFormat("EE, dd MMMM yyyy").format(chosenDate!) : "Set Due Date",
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            if (chosenDate != null)
-                              InkWell(
-                                onTap: () {
-                                  chosenDate = null;
-                                  concatDateAndTime = null;
+                                  if (chosenDate != null) {
+                                    concatDateAndTime = chosenDate;
+                                    chosenTime = null;
+                                    AppLoggerCS.debugLog('concatDateAndTime1: $concatDateAndTime');
+                                  }
                                   setState(() {});
                                 },
-                                child: Icon(
-                                  Icons.close,
-                                  color: Colors.grey,
-                                  size: 24.h,
-                                ),
-                              )
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 12.h),
-                      InkWell(
-                        onTap: () async {
-                          chosenTime = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.now(),
-                          );
-                          AppLoggerCS.debugLog("chosenTime ${chosenTime?.format(context)}");
-                          AppLoggerCS.debugLog('chosenDate2: $chosenDate');
-                          if (chosenTime != null) {
-                            if (concatDateAndTime == null) {
-                              concatDateAndTime = DateTime.now();
-                              concatDateAndTime?.add(
-                                Duration(
-                                  hours: chosenTime!.hour,
-                                  minutes: chosenTime!.minute,
-                                ),
-                              );
-                            } else {
-                              var durationVal = Duration(
-                                hours: chosenTime!.hour,
-                                minutes: chosenTime!.minute,
-                              );
-                              AppLoggerCS.debugLog('durationVal: $durationVal');
-                              concatDateAndTime = concatDateAndTime?.add(durationVal);
-                            }
-                            AppLoggerCS.debugLog('concatDateAndTime2: $concatDateAndTime');
-                          }
-                          setState(() {});
-                        },
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.lock_clock_outlined,
-                                    size: 24.h,
-                                    color: Colors.red.shade300,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Text(
-                                    chosenTime != null ? "${chosenTime?.format(context)}" : "Set Time",
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w400,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.date_range,
+                                            size: 24.h,
+                                            color: Colors.amber.shade400,
+                                          ),
+                                          SizedBox(width: 8.w),
+                                          Text(
+                                            chosenDate != null ? DateFormat("EE, dd MMMM yyyy").format(chosenDate!) : "Set Due Date",
+                                            style: GoogleFonts.inter(
+                                              fontSize: 16.sp,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                    if (chosenDate != null)
+                                      InkWell(
+                                        onTap: () {
+                                          chosenDate = null;
+                                          concatDateAndTime = null;
+                                          setState(() {});
+                                        },
+                                        child: Icon(
+                                          Icons.close,
+                                          color: Colors.grey,
+                                          size: 24.h,
+                                        ),
+                                      )
+                                  ],
+                                ),
                               ),
-                            ),
-                            if (chosenTime != null)
+                              SizedBox(height: 12.h),
                               InkWell(
-                                onTap: () {
-                                  chosenTime = null;
-                                  concatDateAndTime = null;
+                                onTap: () async {
+                                  chosenTime = await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now(),
+                                  );
+                                  AppLoggerCS.debugLog("chosenTime ${chosenTime?.format(context)}");
+                                  AppLoggerCS.debugLog('chosenDate2: $chosenDate');
+                                  if (chosenTime != null) {
+                                    if (concatDateAndTime == null) {
+                                      concatDateAndTime = DateTime.now();
+                                      concatDateAndTime?.add(
+                                        Duration(
+                                          hours: chosenTime!.hour,
+                                          minutes: chosenTime!.minute,
+                                        ),
+                                      );
+                                    } else {
+                                      var durationVal = Duration(
+                                        hours: chosenTime!.hour,
+                                        minutes: chosenTime!.minute,
+                                      );
+                                      AppLoggerCS.debugLog('durationVal: $durationVal');
+                                      concatDateAndTime = concatDateAndTime?.add(durationVal);
+                                    }
+                                    AppLoggerCS.debugLog('concatDateAndTime2: $concatDateAndTime');
+                                  }
                                   setState(() {});
                                 },
-                                child: Icon(
-                                  Icons.close,
-                                  color: Colors.grey,
-                                  size: 24.h,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.lock_clock_outlined,
+                                            size: 24.h,
+                                            color: Colors.red.shade300,
+                                          ),
+                                          SizedBox(width: 8.w),
+                                          Text(
+                                            chosenTime != null ? "${chosenTime?.format(context)}" : "Set Time",
+                                            style: GoogleFonts.inter(
+                                              fontSize: 16.sp,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    if (chosenTime != null)
+                                      InkWell(
+                                        onTap: () {
+                                          chosenTime = null;
+                                          concatDateAndTime = null;
+                                          setState(() {});
+                                        },
+                                        child: Icon(
+                                          Icons.close,
+                                          color: Colors.grey,
+                                          size: 24.h,
+                                        ),
+                                      )
+                                  ],
                                 ),
-                              )
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16.h),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Tasks",
-                  style: GoogleFonts.inter(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                Column(
-                  children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _tasks.length,
-                      itemBuilder: (context, index) {
-                        return Row(
+                      ],
+                    ),
+                    SizedBox(height: 16.h),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Tasks",
+                          style: GoogleFonts.inter(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
+                        Column(
                           children: [
-                            SizedBox(
-                              height: 20.h,
-                              width: 20.h,
-                              child: Checkbox(
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                value: _tasks[index].done,
-                                // value: _tasks[index]["done"],
-                                onChanged: (val) {
-                                  setState(() {
-                                    toggleTask(index);
-                                  });
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: SizedBox(
-                                height: 45.h,
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.all(10),
-                                    hintText: "Enter task...",
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _tasks.length,
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 20.h,
+                                      width: 20.h,
+                                      child: Checkbox(
+                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        value: _tasks[index].done,
+                                        // value: _tasks[index]["done"],
+                                        onChanged: (val) {
+                                          setState(() {
+                                            toggleTask(index);
+                                          });
+                                        },
+                                      ),
                                     ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 45.h,
+                                        child: TextField(
+                                          decoration: const InputDecoration(
+                                            contentPadding: EdgeInsets.all(10),
+                                            hintText: "Enter task...",
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                            ),
+                                          ),
+                                          onChanged: (text) {
+                                            setState(() {
+                                              updateTaskText(index, text);
+                                            });
+                                          },
+                                          // controller: TextEditingController(text: _tasks[index]["text"]),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  onChanged: (text) {
-                                    setState(() {
-                                      updateTaskText(index, text);
-                                    });
-                                  },
-                                  // controller: TextEditingController(text: _tasks[index]["text"]),
-                                ),
-                              ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () {
+                                        setState(() {
+                                          removeTask(index);
+                                        });
+                                      },
+                                      // onPressed: () => _removeTask(index),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
+                            InkWell(
+                              onTap: () {
                                 setState(() {
-                                  removeTask(index);
+                                  addTask();
                                 });
                               },
-                              // onPressed: () => _removeTask(index),
+                              child: Text(
+                                "Add task..",
+                                style: GoogleFonts.inter(
+                                  color: Colors.blue,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
                           ],
-                        );
-                      },
-                    ),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          addTask();
-                        });
-                      },
-                      child: Text(
-                        "Add task..",
-                        style: GoogleFonts.inter(
-                          color: Colors.blue,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
                         ),
-                      ),
+                      ],
                     ),
+                    SizedBox(height: 16.h),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Notes",
+                          style: GoogleFonts.inter(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
+                        TextField(
+                          controller: notesController,
+                          style: GoogleFonts.inter(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          maxLines: 14,
+                          decoration: InputDecoration(
+                            filled: false,
+                            contentPadding: EdgeInsets.all(10.h),
+                            hintText: "Type Body Here...",
+                            hintStyle: GoogleFonts.inter(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.h),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.h),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.h),
                   ],
                 ),
-              ],
+              ),
             ),
-            SizedBox(height: 16.h),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Notes",
-                  style: GoogleFonts.inter(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                TextField(
-                  controller: notesController,
-                  style: GoogleFonts.inter(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  maxLines: 14,
-                  decoration: InputDecoration(
-                    filled: false,
-                    contentPadding: EdgeInsets.all(10.h),
-                    hintText: "Type Body Here...",
-                    hintStyle: GoogleFonts.inter(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.h),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.h),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16.h),
           ],
         );
       }),
