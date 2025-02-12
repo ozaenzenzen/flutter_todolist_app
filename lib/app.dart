@@ -1,6 +1,7 @@
 import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_todolist_app/presentation/home_screen.dart';
+import 'package:get/get.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         AppThemeCS.appThemeInit();
-        return MaterialApp(
+        return GetMaterialApp(
           title: 'To Do List App - SA Test',
           // theme: ThemeData(
           //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
