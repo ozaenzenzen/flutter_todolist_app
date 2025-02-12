@@ -9,7 +9,12 @@ import 'package:flutter_todolist_app/data/model/response/get_list_task_response_
 import 'package:flutter_todolist_app/data/model/response/update_task_response_model.dart';
 
 class TaskRepository {
-  AppApiServiceCS appApiService = AppApiServiceCS("https://4f6a-182-3-45-75.ngrok-free.app");
+  AppApiServiceCS appApiService;
+  TaskRepository(
+    this.appApiService,
+  );
+
+  // AppApiServiceCS appApiService = AppApiServiceCS("https://4f6a-182-3-45-75.ngrok-free.app");
 
   Future<AddTaskResponseModel?> addTask({
     required AddTaskRequestModel dataReq,
@@ -55,10 +60,17 @@ class TaskRepository {
     required GetListTaskRequestModel dataReq,
   }) async {
     try {
+      Map<String, dynamic> req = dataReq.toJson();
+      if (dataReq.sortOrder == null) {
+        req.remove("sort_order");
+      }
+      if (dataReq.status == null) {
+        req.remove("status");
+      }
       final response = await appApiService.call(
         "/task/getlist",
         method: MethodRequestCS.post,
-        request: dataReq.toJson(),
+        request: req,
       );
       if (response.data != null) {
         return GetLIstTaskResponseModel.fromJson(response.data);

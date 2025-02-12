@@ -20,6 +20,12 @@ class GetLIstTaskResponseModel {
         "message": message,
         "Data": data?.toJson(),
       };
+
+  Map<String, dynamic> toJsonPagination() => {
+        "status": status,
+        "message": message,
+        "Data": data?.toJsonPagination(),
+      };
 }
 
 class DataPagination {
@@ -51,6 +57,13 @@ class DataPagination {
         "total_pages": totalPages,
         "total_items": totalItems,
         "list_data": listData == null ? [] : List<dynamic>.from(listData!.map((x) => x.toJson())),
+      };
+
+  Map<String, dynamic> toJsonPagination() => {
+        "current_page": currentPage,
+        "next_page": nextPage,
+        "total_pages": totalPages,
+        "total_items": totalItems,
       };
 }
 
@@ -91,5 +104,14 @@ class ListDatumTask {
         "notes": notes,
         "taskList": taskList,
         "dataJson": dataJson,
+      };
+
+  Map<String, dynamic> toJsonWithoutDataJson() => {
+        "stamp": stamp,
+        "status": status,
+        "dueDateTime": dueDateTime?.toIso8601String(),
+        "taskTitle": taskTitle,
+        "notes": notes,
+        "taskList": taskList,
       };
 }

@@ -1,11 +1,11 @@
 class GetListTaskRequestModel {
-  int? limit;
+  int limit;
   int? currentPage;
   String? sortOrder;
   int? status;
 
   GetListTaskRequestModel({
-    this.limit,
+    required this.limit,
     this.currentPage,
     this.sortOrder,
     this.status,

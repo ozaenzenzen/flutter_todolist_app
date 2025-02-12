@@ -8,6 +8,8 @@ class TaskItemWidget extends StatefulWidget {
   final String? description;
   final DateTime created;
   final DateTime deadline;
+  // final bool? checked;
+  final int? status;
   final void Function(bool?)? onClickCheck;
 
   const TaskItemWidget({
@@ -18,6 +20,8 @@ class TaskItemWidget extends StatefulWidget {
     this.description,
     required this.created,
     required this.deadline,
+    // this.checked,
+    this.status,
     this.onClickCheck,
   });
 
@@ -27,6 +31,14 @@ class TaskItemWidget extends StatefulWidget {
 
 class _TaskItemWidgetState extends State<TaskItemWidget> {
   bool _isCheck = false;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   if (widget.checked != null) {
+  //     _isCheck = widget.checked!;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -126,57 +138,58 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                 ],
               ),
             ),
-            InkWell(
-              onTap: () {
-                // widget.onTapCheckbox?.call();
-              },
-              child: SizedBox(
-                width: 50.w,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Transform.scale(
-                      scale: 1.7,
-                      child: SizedBox(
-                        height: 24.h,
-                        width: 24.h,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(
-                            unselectedWidgetColor: Colors.red,
-                          ),
-                          child: Checkbox(
-                            side: BorderSide(
-                              width: 1.w,
-                              color: const Color(0xff333333).withOpacity(0.4),
+            if (widget.status != 2)
+              InkWell(
+                onTap: () {
+                  // widget.onTapCheckbox?.call();
+                },
+                child: SizedBox(
+                  width: 50.w,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Transform.scale(
+                        scale: 1.7,
+                        child: SizedBox(
+                          height: 24.h,
+                          width: 24.h,
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              unselectedWidgetColor: Colors.red,
                             ),
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            activeColor: const Color(0xff2196F3),
-                            checkColor: Colors.white,
-                            value: _isCheck,
-                            onChanged: (value) {
-                              setState(() {
-                                _isCheck = !_isCheck;
-                                widget.onClickCheck?.call(value);
-                              });
-                            },
+                            child: Checkbox(
+                              side: BorderSide(
+                                width: 1.w,
+                                color: const Color(0xff333333).withOpacity(0.4),
+                              ),
+                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              activeColor: const Color(0xff2196F3),
+                              checkColor: Colors.white,
+                              value: _isCheck,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isCheck = !_isCheck;
+                                  widget.onClickCheck?.call(value);
+                                });
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    // SizedBox(height: 8.h),
-                    // Text(
-                    //   "Mark As Done",
-                    //   textAlign: TextAlign.center,
-                    //   style: GoogleFonts.inter(
-                    //     fontSize: 10.sp,
-                    //     fontWeight: FontWeight.w400,
-                    //   ),
-                    // ),
-                  ],
+                      // SizedBox(height: 8.h),
+                      // Text(
+                      //   "Mark As Done",
+                      //   textAlign: TextAlign.center,
+                      //   style: GoogleFonts.inter(
+                      //     fontSize: 10.sp,
+                      //     fontWeight: FontWeight.w400,
+                      //   ),
+                      // ),
+                    ],
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
