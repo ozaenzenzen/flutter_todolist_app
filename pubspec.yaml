@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -35,6 +35,15 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  flutter_slidable: 3.1.2
+  get: 4.6.6
+  # fam_coding_supply:
+  #   path: ../fam_coding_supply
+  fam_coding_supply:
+    git: 
+      url: https://github.com/ozaenzenzen/fam_coding_supply.git
+      ref: master
+  pull_to_refresh: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +56,8 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
 
+dependency_overrides: 
+  get: 4.6.6
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
