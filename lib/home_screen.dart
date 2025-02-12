@@ -1,12 +1,12 @@
+import 'dart:convert';
+
 import 'package:fam_coding_supply/fam_coding_supply.dart';
-import 'package:fam_coding_supply/ui/widget/app_mainbutton_widget.dart';
-import 'package:fam_coding_supply/ui/widget/app_secondarybutton_widget.dart';
-import 'package:fam_coding_supply/ui/widget/app_textfield_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_todolist_app/domain/task_holder_entity.dart';
 import 'package:flutter_todolist_app/presentation/widget/categories_chip_widget.dart';
 import 'package:flutter_todolist_app/presentation/widget/task_item_widget.dart';
-import 'package:flutter_todolist_app/settings_screen.dart';
 import 'package:flutter_todolist_app/support/app_color.dart';
+import 'package:flutter_todolist_app/support/task_action_enum.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,8 +29,6 @@ class _HomePageState extends State<HomePage> {
 
   String? currentFilter;
 
-  bool confirmDelete = false;
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -50,7 +48,12 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             onPressed: () async {
-              await bottomSheetAction();
+              await bottomSheetAction(
+                taskActionEnum: TaskActionEnum.create,
+                callbackAction: (data) {
+                  AppLoggerCS.debugLog("value here 1: ${data?.toJson()}");
+                },
+              );
             },
           ),
           body: Column(
@@ -166,19 +169,6 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: categoriesFilter.length,
                   itemBuilder: (context, index) {
-                    // Widget chip = Container(
-                    //   padding: EdgeInsets.symmetric(
-                    //     horizontal: 12.w,
-                    //   ),
-                    //   alignment: Alignment.center,
-                    //   decoration: BoxDecoration(
-                    //     color: const Color(0xff2196F3).withOpacity(0.2),
-                    //     borderRadius: BorderRadius.circular(
-                    //       20.h,
-                    //     ),
-                    //   ),
-                    //   child: Text("${categoriesFilter[index]}"),
-                    // );
                     Widget chip = CategoriesChipWidget(
                       value: categoriesFilter[index],
                       groupValue: currentFilter,
@@ -189,9 +179,6 @@ class _HomePageState extends State<HomePage> {
                           } else {
                             currentFilter = value;
                           }
-                          // if (currentFilter == value){
-                          //   currentFilter = null;
-                          // }
                           AppLoggerCS.debugLog("$currentFilter");
                         });
                       },
@@ -226,30 +213,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(height: 12.h),
-              // Expanded(
-              //   child: ListView.builder(
-              //     itemCount: items.length,
-              //     padding: const EdgeInsets.symmetric(vertical: 16),
-              //     itemBuilder: (BuildContext context, int index) {
-              //       return Dismissible(
-              //         background: Container(
-              //           color: Colors.green,
-              //         ),
-              //         key: ValueKey<int>(items[index]),
-              //         onDismissed: (DismissDirection direction) {
-              //           setState(() {
-              //             items.removeAt(index);
-              //           });
-              //         },
-              //         child: ListTile(
-              //           title: Text(
-              //             'Item ${items[index]}',
-              //           ),
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
               Expanded(
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(
@@ -290,37 +253,23 @@ class _HomePageState extends State<HomePage> {
                         title: "title ${items[index]}",
                         created: DateTime.now(),
                         deadline: DateTime.now(),
-                        onTapCheckbox: () {
-                          confirmDelete = false;
-                          AppDialogActionCS.showWarningPopup(
-                            context: context,
-                            title: "Warning",
-                            description: "Are you sure want to finish this task?",
-                            isHorizontal: false,
-                            mainButtonAction: () {
-                              setState(() {
-                                confirmDelete = false;
-                                Navigator.pop(context);
-                              });
-                            },
-                            mainButtonTitle: "Back",
-                            secondaryButtonAction: () {
-                              setState(() {
-                                confirmDelete = true;
-                                Navigator.pop(context);
-                              });
-                            },
-                            secondaryButtonTitle: "Yes",
-                          ).then((value) {
-                            setState(() {});
-                          });
-                          return confirmDelete;
-                        },
                         onTap: () async {
-                          await bottomSheetAction();
+                          await bottomSheetAction(
+                            taskActionEnum: TaskActionEnum.update,
+                            callbackAction: (data) {
+                              AppLoggerCS.debugLog("value here 2: ${data?.toJson()}");
+                            },
+                          );
                         },
                         onClickCheck: (bool? isCheck) {
                           AppLoggerCS.debugLog("debug: $isCheck");
+                          if (isCheck!) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('title ${items[index]} Marked as Done'),
+                              ),
+                            );
+                          }
                         },
                       ),
                     );
@@ -337,34 +286,59 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> bottomSheetAction() async {
+  Future<void> bottomSheetAction({
+    TaskActionEnum? taskActionEnum,
+    Function(TaskHolderDataEntity? data)? callbackAction,
+  }) async {
+    // String? taskTitle;
+    DateTime? concatDateAndTime;
     DateTime? chosenDate;
     TimeOfDay? chosenTime;
+    TextEditingController taskTitleController = TextEditingController();
     TextEditingController notesController = TextEditingController();
-    List<Map<String, dynamic>> _tasks = [];
+    List<TaskListDataEntity> _tasks = [];
+    // List<Map<String, dynamic>> _tasks = [];
 
-    void _addTask() {
+    TaskHolderDataEntity dataHolder = TaskHolderDataEntity();
+
+    void dataHolderHandling() {
+      dataHolder.taskTitle = taskTitleController.text;
+      dataHolder.deadline = concatDateAndTime?.toIso8601String();
+      dataHolder.deadline2 = concatDateAndTime;
+      dataHolder.notes = notesController.text;
+      dataHolder.tasksList = _tasks;
+    }
+
+    void addTask() {
       setState(() {
-        _tasks.add({"text": "", "done": false});
+        // _tasks.add({"text": "", "done": false});
+        _tasks.add(
+          TaskListDataEntity(
+            text: "",
+            done: false,
+          ),
+        );
       });
     }
 
-    void _removeTask(int index) {
+    void removeTask(int index) {
       setState(() {
         _tasks.removeAt(index);
       });
     }
 
-    void _toggleTask(int index) {
+    void toggleTask(int index) {
       setState(() {
-        _tasks[index]["done"] = !_tasks[index]["done"];
+        // _tasks[index]["done"] = !_tasks[index]["done"];
+        _tasks[index].done = !_tasks[index].done!;
       });
     }
 
-    void _updateTaskText(int index, String text) {
-      // setState(() {
-      _tasks[index]["text"] = text;
-      // });
+    void updateTaskText(int index, String text) {
+      setState(() {
+        // _tasks[index]["text"] = text;
+        _tasks[index].text = text;
+      });
     }
 
     await AppBottomSheetAction().showBottomSheet(
@@ -377,34 +351,81 @@ class _HomePageState extends State<HomePage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       content: StatefulBuilder(builder: (context, setState) {
-        AppLoggerCS.debugLog("_tasks: ${_tasks}");
+        AppLoggerCS.debugLog("_tasks: ${jsonEncode(_tasks.map((task) => task.toJson()).toList())}");
+        dataHolderHandling();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                InkWell(
-                  onTap: () {
-                    // Navigator.pop(context);
-                  },
-                  child: Text(
-                    "Save",
-                    style: GoogleFonts.inter(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16.sp,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        dataHolderHandling();
+                        Navigator.pop(context);
+                        callbackAction?.call(dataHolder);
+                      },
+                      child: Text(
+                        "Save",
+                        style: GoogleFonts.inter(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16.sp,
+                        ),
+                      ),
                     ),
-                  ),
+                    if (taskActionEnum == TaskActionEnum.update)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: 16.w),
+                          InkWell(
+                            onTap: () {
+                              AppDialogActionCS.showWarningPopup(
+                                context: context,
+                                title: "Warning",
+                                description: "Are you sure want to delete this task include all its details?",
+                                isHorizontal: false,
+                                mainButtonAction: () {
+                                  // setState(() {
+                                  //   confirmDelete = false;
+                                  Navigator.pop(context);
+                                  // });
+                                },
+                                mainButtonTitle: "Back",
+                                secondaryButtonAction: () {
+                                  // setState(() {
+                                  //   confirmDelete = true;
+                                  Navigator.pop(context);
+                                  // });
+                                },
+                                secondaryButtonTitle: "Yes",
+                              );
+                            },
+                            child: Text(
+                              "Delete",
+                              style: GoogleFonts.inter(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.sp,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
                 InkWell(
                   onTap: () {
                     Navigator.pop(context);
                   },
                   child: Text(
-                    "Close",
+                    "Back",
                     style: GoogleFonts.inter(
-                      color: Colors.red,
+                      color: Colors.black54,
                       fontWeight: FontWeight.w600,
                       fontSize: 16.sp,
                     ),
@@ -419,6 +440,45 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 16.h),
             // content ?? const SizedBox(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Task Title",
+                  style: GoogleFonts.inter(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                TextField(
+                  controller: taskTitleController,
+                  style: GoogleFonts.inter(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  maxLines: 1,
+                  decoration: InputDecoration(
+                    filled: false,
+                    contentPadding: EdgeInsets.all(10.h),
+                    hintText: "Type Body Here...",
+                    hintStyle: GoogleFonts.inter(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.h),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.h),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.h),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -444,6 +504,13 @@ class _HomePageState extends State<HomePage> {
                             firstDate: DateTime.now(),
                             lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
                           );
+                          AppLoggerCS.debugLog('chosenDate: $chosenDate');
+
+                          if (chosenDate != null) {
+                            concatDateAndTime = chosenDate;
+                            chosenTime = null;
+                            AppLoggerCS.debugLog('concatDateAndTime1: $concatDateAndTime');
+                          }
                           setState(() {});
                         },
                         child: Row(
@@ -471,11 +538,12 @@ class _HomePageState extends State<HomePage> {
                               InkWell(
                                 onTap: () {
                                   chosenDate = null;
+                                  concatDateAndTime = null;
                                   setState(() {});
                                 },
                                 child: Icon(
                                   Icons.close,
-                                  color: Colors.red,
+                                  color: Colors.grey,
                                   size: 24.h,
                                 ),
                               )
@@ -489,8 +557,28 @@ class _HomePageState extends State<HomePage> {
                             context: context,
                             initialTime: TimeOfDay.now(),
                           );
+                          AppLoggerCS.debugLog("chosenTime ${chosenTime?.format(context)}");
+                          AppLoggerCS.debugLog('chosenDate2: $chosenDate');
+                          if (chosenTime != null) {
+                            if (concatDateAndTime == null) {
+                              concatDateAndTime = DateTime.now();
+                              concatDateAndTime?.add(
+                                Duration(
+                                  hours: chosenTime!.hour,
+                                  minutes: chosenTime!.minute,
+                                ),
+                              );
+                            } else {
+                              var durationVal = Duration(
+                                hours: chosenTime!.hour,
+                                minutes: chosenTime!.minute,
+                              );
+                              AppLoggerCS.debugLog('durationVal: $durationVal');
+                              concatDateAndTime = concatDateAndTime?.add(durationVal);
+                            }
+                            AppLoggerCS.debugLog('concatDateAndTime2: $concatDateAndTime');
+                          }
                           setState(() {});
-                          // AppLoggerCS.debugLog("chosenTime ${chosenTime?.format(context)}");
                         },
                         child: Row(
                           children: [
@@ -517,11 +605,12 @@ class _HomePageState extends State<HomePage> {
                               InkWell(
                                 onTap: () {
                                   chosenTime = null;
+                                  concatDateAndTime = null;
                                   setState(() {});
                                 },
                                 child: Icon(
                                   Icons.close,
-                                  color: Colors.red,
+                                  color: Colors.grey,
                                   size: 24.h,
                                 ),
                               )
@@ -549,6 +638,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     ListView.builder(
                       shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: _tasks.length,
                       itemBuilder: (context, index) {
                         return Row(
@@ -558,10 +648,11 @@ class _HomePageState extends State<HomePage> {
                               width: 20.h,
                               child: Checkbox(
                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                value: _tasks[index]["done"],
+                                value: _tasks[index].done,
+                                // value: _tasks[index]["done"],
                                 onChanged: (val) {
                                   setState(() {
-                                    _toggleTask(index);
+                                    toggleTask(index);
                                   });
                                 },
                               ),
@@ -582,7 +673,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   onChanged: (text) {
                                     setState(() {
-                                      _updateTaskText(index, text);
+                                      updateTaskText(index, text);
                                     });
                                   },
                                   // controller: TextEditingController(text: _tasks[index]["text"]),
@@ -593,7 +684,7 @@ class _HomePageState extends State<HomePage> {
                               icon: const Icon(Icons.delete, color: Colors.red),
                               onPressed: () {
                                 setState(() {
-                                  _removeTask(index);
+                                  removeTask(index);
                                 });
                               },
                               // onPressed: () => _removeTask(index),
@@ -605,7 +696,7 @@ class _HomePageState extends State<HomePage> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          _addTask();
+                          addTask();
                         });
                       },
                       child: Text(
@@ -617,15 +708,6 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     setState(() {
-                    //       _addTask();
-                    //     });
-                    //   },
-                    //   // onPressed: _addTask,
-                    //   child: const Text("Add Task"),
-                    // ),
                   ],
                 ),
               ],

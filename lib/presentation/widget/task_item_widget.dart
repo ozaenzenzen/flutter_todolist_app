@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:flutter/material.dart';
 
@@ -11,10 +9,6 @@ class TaskItemWidget extends StatefulWidget {
   final DateTime created;
   final DateTime deadline;
   final void Function(bool?)? onClickCheck;
-  // final bool Function(bool?)? onClickCheck;
-  final bool Function()? onTapCheckbox;
-  // final void Function()? onTapCheckbox;
-  // final bool? isCheck;
 
   const TaskItemWidget({
     super.key,
@@ -25,8 +19,6 @@ class TaskItemWidget extends StatefulWidget {
     required this.created,
     required this.deadline,
     this.onClickCheck,
-    this.onTapCheckbox,
-    // this.isCheck,
   });
 
   @override
@@ -166,21 +158,6 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                               setState(() {
                                 _isCheck = !_isCheck;
                                 widget.onClickCheck?.call(value);
-                                          
-                                // bool? checkbox = widget.onTapCheckbox?.call();
-                                // AppLoggerCS.debugLog("herecheckbox: $checkbox");
-                                // if (checkbox != null) {
-                                //   if (checkbox) {
-                                //     // _isCheck = !_isCheck;
-                                //     _isCheck = checkbox;
-                                //     widget.onClickCheck?.call(value);
-                                //     // _isCheck = widget.onClickCheck?.call(value) ?? false;
-                                //   } else {
-                                //     //
-                                //   }
-                                // } else {
-                                //   //
-                                // }
                               });
                             },
                           ),
