@@ -164,15 +164,15 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      "Mark As Done",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
+                    // SizedBox(height: 8.h),
+                    // Text(
+                    //   "Mark As Done",
+                    //   textAlign: TextAlign.center,
+                    //   style: GoogleFonts.inter(
+                    //     fontSize: 10.sp,
+                    //     fontWeight: FontWeight.w400,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
