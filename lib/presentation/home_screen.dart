@@ -74,15 +74,6 @@ class _HomePageState extends State<HomePage> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    InkWell(
-                      onTap: () {
-                        //
-                      },
-                      child: Icon(
-                        Icons.settings,
-                        size: 24.h,
-                      ),
-                    )
                   ],
                 ),
               ),
